@@ -1,23 +1,46 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import Payments from "./Payments";
 
 class Header extends Component {
+  renderContent() {
+    switch (this.props.auth) {
+      case null:
+        return;
+      case false:
+        return (
+          <li>
+            <a href="/auth/google">Login With Google</a>
+          </li>
+        );
+      default:
+        return [
+          <li key="1">
+            <Payments />
+          </li>,
+          <li key="3" style={{ margin: "0 10px" }}>
+            Credits: {this.props.auth.credits}
+          </li>,
+          <li key="2">
+            <a href="/api/logout">Logout</a>
+          </li>,
+        ];
+    }
+  }
+
   render() {
     return (
       <nav>
-        <div class="nav-wrapper">
-          <a href="#" class="left brand-logo">
+        <div className="nav-wrapper">
+          <Link
+            to={this.props.auth ? "/surverys" : "/"}
+            className="left brand-logo"
+          >
             Survey Mail
-          </a>
-          <ul id="nav-mobile" class="right">
-            <li>
-              <a href="sass.html">Login With google</a>
-            </li>
-            <li>
-              <a href="badges.html">Components</a>
-            </li>
-            <li>
-              <a href="collapsible.html">JavaScript</a>
-            </li>
+          </Link>
+          <ul id="nav-mobile" className="right">
+            {this.renderContent()}
           </ul>
         </div>
       </nav>
@@ -25,4 +48,8 @@ class Header extends Component {
   }
 }
 
-export default Header;
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(Header);
